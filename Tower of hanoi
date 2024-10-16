@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class TowerOfHanoi {
+public:
+    TowerOfHanoi(int n) {
+        numDisks = n;
+        // Initialize the rods with disks
+        rods.resize(3);
+        for (int i = numDisks; i >= 1; --i) {
+            rods[0].push_back(i); // Push disks onto the first rod
+        }
+    }
+
+    void solve() {
+        moveDisks(numDisks, 0, 2, 1); // A(0) -> C(2) using B(1)
+        cout << "Total moves: " << moveCount << endl;
+    }
+
+    void displayRods() {
+        cout << "Current state of rods:\n";
+        for (int i = 0; i < 3; ++i) {
+            cout << "Rod " << char('A' + i) << ": ";
+            for (int disk : rods[i]) {
+                cout << disk << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+
+private:
+    int numDisks;
+    int moveCount = 0;
+    vector<vector<int>> rods; // Each rod contains a vector of disks
+
+    void moveDisks(int n, int source, int destination, int auxiliary) {
+        if (n == 1) {
+            rods[destination].push_back(rods[source].back()); // Move the disk
+            rods[source].pop_back(); // Remove the disk from source
+            moveCount++;
+            displayRods(); // Show the current state
+            return;
+        }
+        // Move n-1 disks from source to auxiliary
+        moveDisks(n - 1, source, auxiliary, destination);
+        // Move the nth disk from source to destination
+        rods[destination].push_back(rods[source].back());
+        rods[source].pop_back();
+        moveCount++;
+        displayRods(); // Show the current state
+        // Move the n-1 disks from auxiliary to destination
+        moveDisks(n - 1, auxiliary, destination, source);
+    }
+};
+
+int main() {
+    int n; // Number of disks
+    cout << "Enter the number of disks: ";
+    cin >> n;
+
+    // Input validation
+    while (n <= 0) {
+        cout << "Please enter a positive integer: ";
+        cin >> n;
+    }
+
+    TowerOfHanoi hanoi(n);
+    hanoi.displayRods(); // Show initial state
+    hanoi.solve(); // Solve the problem
+    return 0;
+}
